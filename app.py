@@ -15,6 +15,9 @@ import requests
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+# Constants
+MAX_TEMPO = 200  # Maximum tempo for normalization
+
 # Load credentials from keys.json
 def load_credentials():
     try:
@@ -467,7 +470,7 @@ def calculate_similarity(features1, features2):
     for feature, weight in feature_weights.items():
         if feature == 'tempo':
             # Normalize tempo difference (typical range: 50-200 bpm)
-            diff = abs(features1[feature] - features2[feature]) / 150
+            diff = abs(features1[feature] - features2[feature]) / MAX_TEMPO
             similarity = max(0, 1 - diff)
         else:
             # Other features are already 0-1

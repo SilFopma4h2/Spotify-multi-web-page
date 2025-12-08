@@ -3,6 +3,9 @@ let currentTrack = null;
 let isPlaying = false;
 let moodData = null;
 
+// Constants
+const MAX_TEMPO = 200; // Maximum tempo for normalization
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     initializeDashboard();
@@ -178,7 +181,7 @@ function displayMood(data) {
     updateStatBar('energy', data.energy);
     updateStatBar('valence', data.valence);
     updateStatBar('danceability', data.danceability);
-    updateStatBar('tempo', Math.min(data.tempo / 200, 1)); // Normalize tempo to 0-1
+    updateStatBar('tempo', Math.min(data.tempo / MAX_TEMPO, 1)); // Normalize tempo to 0-1
 }
 
 function updateStatBar(name, value) {
@@ -192,7 +195,7 @@ function updateStatBar(name, value) {
     if (valueSpan) {
         if (name === 'tempo') {
             // Show actual tempo value
-            valueSpan.textContent = Math.round(value * 200) + ' BPM';
+            valueSpan.textContent = Math.round(value * MAX_TEMPO) + ' BPM';
         } else {
             valueSpan.textContent = (value * 100).toFixed(0) + '%';
         }
@@ -212,6 +215,13 @@ function getMoodEmoji(mood) {
         'Balanced': '⚖️'
     };
     return emojiMap[mood] || '🎵';
+}
+
+// Utility function to format duration
+function formatDuration(durationMs) {
+    const minutes = Math.floor(durationMs / 60000);
+    const seconds = Math.floor((durationMs % 60000) / 1000);
+    return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
 // Visualizer Functions
