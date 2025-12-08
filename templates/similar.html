@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Similar Tracks - Spotify Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Similar Tracks Finder</h1>
+            <nav>
+                <a href="/">Dashboard</a>
+                <a href="/wrapped">Wrapped</a>
+                <a href="/similar">Similar Tracks</a>
+            </nav>
+        </header>
+
+        <div class="similar-content">
+            <!-- Search Section -->
+            <div class="card search-section">
+                <h2>Find Similar Tracks</h2>
+                <div class="search-form">
+                    <div class="form-group">
+                        <label for="track-id-input">Track ID (leave blank to use currently playing)</label>
+                        <input type="text" id="track-id-input" placeholder="Enter Spotify Track ID">
+                    </div>
+                    <button id="find-similar-btn" class="btn-primary">Find Similar Tracks</button>
+                    <button id="use-current-btn" class="btn-secondary">Use Currently Playing</button>
+                </div>
+            </div>
+
+            <!-- Original Track Section -->
+            <div id="original-track-section" class="card" style="display: none;">
+                <h2>Original Track</h2>
+                <div id="original-track-info"></div>
+            </div>
+
+            <!-- Similar Tracks Section -->
+            <div id="similar-tracks-section" class="card" style="display: none;">
+                <h2>Similar Tracks</h2>
+                <div id="similar-tracks-list" class="similar-tracks-grid"></div>
+            </div>
+
+            <!-- Loading Message -->
+            <div id="loading-message" class="card" style="display: none;">
+                <p class="loading">Finding similar tracks...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const trackIdInput = document.getElementById('track-id-input');
+        const findSimilarBtn = document.getElementById('find-similar-btn');
+        const useCurrentBtn = document.getElementById('use-current-btn');
+        const originalTrackSection = document.getElementById('original-track-section');
+        const originalTrackInfo = document.getElementById('original-track-info');
+        const similarTracksSection = document.getElementById('similar-tracks-section');
+        const similarTracksList = document.getElementById('similar-tracks-list');
+        const loadingMessage = document.getElementById('loading-message');
+
+        async function findSimilarTracks(trackId = '') {
+            // Hide previous results
+            originalTrackSection.style.display = 'none';
+            similarTracksSection.style.display = 'none';
+            loadingMessage.style.display = 'block';
+
+            try {
+                const url = trackId ? `/api/similar?track_id=${trackId}` : '/api/similar';
+                const response = await fetch(url);
+                const data = await response.json();
+
+                loadingMessage.style.display = 'none';
+
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+
+                // Display original track
+                originalTrackInfo.innerHTML = `
+                    <div class="original-track">
+                        <h3>${data.original_track.name}</h3>
+                        <p>${data.original_track.artists}</p>
+                    </div>
+                `;
+                originalTrackSection.style.display = 'block';
+
+                // Display similar tracks
+                similarTracksList.innerHTML = '';
+                data.similar_tracks.forEach((track) => {
+                    const trackCard = document.createElement('div');
+                    trackCard.className = 'similar-track-card';
+                    trackCard.innerHTML = `
+                        ${track.album_art ? `<img src="${track.album_art}" alt="${track.name}">` : '<div class="placeholder-img">🎵</div>'}
+                        <div class="similar-track-info">
+                            <h4>${track.name}</h4>
+                            <p class="artist">${track.artists}</p>
+                            <p class="album">${track.album}</p>
+                            <div class="similarity-score">
+                                <span>Similarity: ${track.similarity}%</span>
+                                <div class="similarity-bar">
+                                    <div class="similarity-fill" style="width: ${track.similarity}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    similarTracksList.appendChild(trackCard);
+                });
+                similarTracksSection.style.display = 'block';
+            } catch (error) {
+                loadingMessage.style.display = 'none';
+                console.error('Error finding similar tracks:', error);
+                alert('Error finding similar tracks. Please try again.');
+            }
+        }
+
+        findSimilarBtn.addEventListener('click', () => {
+            const trackId = trackIdInput.value.trim();
+            findSimilarTracks(trackId);
+        });
+
+        useCurrentBtn.addEventListener('click', () => {
+            trackIdInput.value = '';
+            findSimilarTracks();
+        });
+
+        // Allow Enter key to submit
+        trackIdInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                findSimilarTracks(trackIdInput.value.trim());
+            }
+        });
+    </script>
+</body>
+</html>
