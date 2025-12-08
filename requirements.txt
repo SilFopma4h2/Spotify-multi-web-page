@@ -1,0 +1,5 @@
+Flask==3.0.0
+spotipy==2.25.1
+Pillow==10.3.0
+matplotlib==3.8.2
+requests==2.31.0

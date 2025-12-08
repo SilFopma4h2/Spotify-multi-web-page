@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Spotify Dashboard</h1>
+            <nav>
+                <a href="/">Dashboard</a>
+                <a href="/wrapped">Wrapped</a>
+                <a href="/similar">Similar Tracks</a>
+            </nav>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Now Playing Card -->
+            <div class="card now-playing-card">
+                <h2>Now Playing</h2>
+                <div id="now-playing-content">
+                    <div id="no-track" class="no-track">
+                        <p>No track currently playing</p>
+                    </div>
+                    <div id="track-info" style="display: none;">
+                        <img id="album-art" src="" alt="Album Art">
+                        <div class="track-details">
+                            <h3 id="track-name">-</h3>
+                            <p id="track-artist">-</p>
+                            <p id="track-album">-</p>
+                            <div class="progress-bar">
+                                <div id="progress" class="progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Playback Controls -->
+                <div class="controls">
+                    <button id="prev-btn" class="control-btn" title="Previous" aria-label="Previous track">⏮️</button>
+                    <button id="play-pause-btn" class="control-btn main-btn" title="Play/Pause" aria-label="Play or pause playback">▶️</button>
+                    <button id="next-btn" class="control-btn" title="Next" aria-label="Next track">⏭️</button>
+                    <button id="shuffle-btn" class="control-btn" title="Shuffle" aria-label="Toggle shuffle">🔀</button>
+                </div>
+            </div>
+
+            <!-- Mood Analyzer Card -->
+            <div class="card mood-card">
+                <h2>Mood Analyzer</h2>
+                <div id="mood-content">
+                    <div class="mood-display">
+                        <div class="mood-emoji" id="mood-emoji">🎵</div>
+                        <div class="mood-text" id="mood-text">Analyzing...</div>
+                    </div>
+                    <div class="mood-stats">
+                        <div class="stat">
+                            <span class="stat-label">Energy</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="energy-bar" style="width: 0%"></div>
+                            </div>
+                            <span class="stat-value" id="energy-value">-</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Valence</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="valence-bar" style="width: 0%"></div>
+                            </div>
+                            <span class="stat-value" id="valence-value">-</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Danceability</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="danceability-bar" style="width: 0%"></div>
+                            </div>
+                            <span class="stat-value" id="danceability-value">-</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Tempo</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" id="tempo-bar" style="width: 0%"></div>
+                            </div>
+                            <span class="stat-value" id="tempo-value">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualizer Card -->
+            <div class="card visualizer-card">
+                <h2>Audio Visualizer</h2>
+                <canvas id="visualizer" width="600" height="300"></canvas>
+            </div>
+
+            <!-- Smart Playlist Generator Card -->
+            <div class="card playlist-card">
+                <h2>Smart Playlist Generator</h2>
+                <div class="playlist-form">
+                    <div class="form-group">
+                        <label for="playlist-name">Playlist Name</label>
+                        <input type="text" id="playlist-name" placeholder="My Awesome Playlist" value="Smart Playlist">
+                    </div>
+                    <div class="form-group">
+                        <label for="playlist-mood">Mood</label>
+                        <select id="playlist-mood">
+                            <option value="energetic">Energetic</option>
+                            <option value="calm">Calm</option>
+                            <option value="happy">Happy</option>
+                            <option value="sad">Sad</option>
+                            <option value="dance">Dance/Party</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tempo-min">Min Tempo (BPM)</label>
+                            <input type="number" id="tempo-min" value="100" min="50" max="200">
+                        </div>
+                        <div class="form-group">
+                            <label for="tempo-max">Max Tempo (BPM)</label>
+                            <input type="number" id="tempo-max" value="150" min="50" max="200">
+                        </div>
+                    </div>
+                    <button id="create-playlist-btn" class="btn-primary">Create Playlist</button>
+                    <div id="playlist-result" class="result-message"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

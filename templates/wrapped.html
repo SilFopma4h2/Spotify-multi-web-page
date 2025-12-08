@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Wrapped - Spotify Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Your Wrapped</h1>
+            <nav>
+                <a href="/">Dashboard</a>
+                <a href="/wrapped">Wrapped</a>
+                <a href="/similar">Similar Tracks</a>
+            </nav>
+        </header>
+
+        <div class="wrapped-content">
+            <!-- Top Tracks Section -->
+            <div class="card wrapped-section">
+                <h2>Your Top 20 Tracks</h2>
+                <div id="top-tracks-list" class="tracks-list">
+                    <p class="loading">Loading your top tracks...</p>
+                </div>
+            </div>
+
+            <!-- Top Artists Section -->
+            <div class="card wrapped-section">
+                <h2>Your Top 10 Artists</h2>
+                <div id="top-artists-list" class="artists-list">
+                    <p class="loading">Loading your top artists...</p>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="card chart-section">
+                <h2>Track Durations</h2>
+                <div id="chart-container">
+                    <img id="duration-chart" src="" alt="Duration Chart" style="display: none; width: 100%; max-width: 800px;">
+                    <p class="loading">Generating chart...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Utility function to format duration
+        function formatDuration(durationMs) {
+            const minutes = Math.floor(durationMs / 60000);
+            const seconds = Math.floor((durationMs % 60000) / 1000);
+            return `${minutes}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // Fetch wrapped data
+        async function loadWrappedData() {
+            try {
+                const response = await fetch('/api/wrapped');
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error('Error:', data.error);
+                    return;
+                }
+
+                // Display top tracks
+                const tracksList = document.getElementById('top-tracks-list');
+                tracksList.innerHTML = '';
+                data.top_tracks.forEach((track, index) => {
+                    const trackElement = document.createElement('div');
+                    trackElement.className = 'track-item';
+                    trackElement.innerHTML = `
+                        <div class="track-number">${index + 1}</div>
+                        ${track.album_art ? `<img src="${track.album_art}" alt="${track.name}">` : ''}
+                        <div class="track-info">
+                            <div class="track-name">${track.name}</div>
+                            <div class="track-artist">${track.artists}</div>
+                        </div>
+                        <div class="track-duration">${formatDuration(track.duration_ms)}</div>
+                    `;
+                    tracksList.appendChild(trackElement);
+                });
+
+                // Display top artists
+                const artistsList = document.getElementById('top-artists-list');
+                artistsList.innerHTML = '';
+                data.top_artists.forEach((artist, index) => {
+                    const artistElement = document.createElement('div');
+                    artistElement.className = 'artist-item';
+                    artistElement.innerHTML = `
+                        <div class="artist-number">${index + 1}</div>
+                        ${artist.image ? `<img src="${artist.image}" alt="${artist.name}">` : ''}
+                        <div class="artist-info">
+                            <div class="artist-name">${artist.name}</div>
+                            <div class="artist-genres">${artist.genres || 'Various genres'}</div>
+                        </div>
+                    `;
+                    artistsList.appendChild(artistElement);
+                });
+
+                // Display chart
+                if (data.chart) {
+                    const chartImg = document.getElementById('duration-chart');
+                    chartImg.src = data.chart;
+                    chartImg.style.display = 'block';
+                    document.querySelector('#chart-container .loading').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading wrapped data:', error);
+            }
+        }
+
+        // Load data when page loads
+        loadWrappedData();
+    </script>
+</body>
+</html>
