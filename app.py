@@ -486,4 +486,6 @@ if __name__ == '__main__':
     # Ensure .cache directory exists
     os.makedirs('.cache', exist_ok=True)
     print("Starting Spotify Dashboard on http://localhost:5000")
+    # NOTE: debug=True is for local development only. 
+    # For production, set debug=False to prevent security risks.
     app.run(host='0.0.0.0', port=5000, debug=True)
